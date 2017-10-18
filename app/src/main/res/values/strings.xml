@@ -8,4 +8,7 @@
     <string name="incorrect_answer">Incorrect!</string>
     <string name="restarting_quiz">Quiz will restart with your new settings</string>
     <string name="results">%1$d guesses, %2$.01f%% correct</string>
+    <string name="action_settings">Settings</string>
+    <string name="quiz_modes">Modes</string>
+    <string name="quiz_modes_description">Mode of quiz to play</string>
 </resources>

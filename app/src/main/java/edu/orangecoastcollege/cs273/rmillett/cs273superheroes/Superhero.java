@@ -27,9 +27,9 @@ public class Superhero {
         mName = name;
         mSuperpower = superpower;
         mOneThing = oneThing;
-        name = name.replaceAll(" ", "_");
-        superpower = superpower.replaceAll(" ", "_");
-        oneThing = oneThing.replaceAll(" ", "_");
+//        name = name.replaceAll(" ", "_");
+//        superpower = superpower.replaceAll(" ", "_");
+//        oneThing = oneThing.replaceAll(" ", "_");
         mFileName = username + ".png";
     }
 
