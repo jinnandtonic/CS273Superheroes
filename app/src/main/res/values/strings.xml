@@ -5,4 +5,7 @@
     <string name="guess_superhero">Guess the Superhero</string>
     <string name="guess_super_power">Guess the Super Power</string>
     <string name="guess_one_thing">Guess the One Thing</string>
+    <string name="incorrect_answer">Incorrect!</string>
+    <string name="restarting_quiz">Quiz will restart with your new settings</string>
+    <string name="results">%1$d guesses, %2$.01f%% correct</string>
 </resources>
