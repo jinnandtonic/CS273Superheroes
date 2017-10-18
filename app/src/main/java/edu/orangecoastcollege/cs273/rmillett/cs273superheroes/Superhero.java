@@ -30,7 +30,7 @@ public class Superhero {
 //        name = name.replaceAll(" ", "_");
 //        superpower = superpower.replaceAll(" ", "_");
 //        oneThing = oneThing.replaceAll(" ", "_");
-        mFileName = username + ".png";
+        mFileName = "superheroes/" + username + ".png";
     }
 
     /**

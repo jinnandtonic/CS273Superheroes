@@ -2,9 +2,12 @@ package edu.orangecoastcollege.cs273.rmillett.cs273superheroes;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,8 +16,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -60,10 +66,9 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        // TODO: build mPreferenceChangeListener
         // Register the OnSharedPreferencesChangeListener
-//        SharedPreferences mPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
-//        mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
+        SharedPreferences mPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
+        mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
 
         mQuizSuperheroesList = new ArrayList<>(QUESTIONS_IN_QUIZ);
         rng = new SecureRandom();
@@ -88,15 +93,14 @@ public class QuizActivity extends AppCompatActivity {
         mQuestionNumberTextView.setText(getString(R.string.question, 1, QUESTIONS_IN_QUIZ));
 
         // TODO: Load all superheroes from the JSON file using JSONLoader
-//        try {
-//            mAllSuperheroesList = JSONLoader.loadJSONFromAsset(this);
-//        }
-//        catch (IOException e) {
-//            Log.e(TAG, "Error loading JSON file", e);
-//        }
+        try {
+            mAllSuperheroesList = JSONLoader.loadJSONFromAsset(this);
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Error loading JSON file", e);
+        }
 
-        // TODO: preferences
-//        mMode = mPreferences.getString(MODES, "All");
+        mMode = mPreferences.getString(MODES, "Superhero Name");
         updateMode();
 
         // Reset quiz
@@ -107,7 +111,23 @@ public class QuizActivity extends AppCompatActivity {
      * Initializes random questions and starts a new quiz
      */
     public void resetQuiz() {
-        // TODO: resetQuiz() method
+        // reset guesses, clear list
+        mCorrectGuesses = 0;
+        mTotalGuesses = 0;
+        mQuizSuperheroesList.clear();
+
+        // randomly add superheroes from filtered list into quiz list
+        int size = mFilteredSuperheroesList.size();
+        int randomPosition;
+        Superhero randomSuperhero;
+        while (mQuizSuperheroesList.size() < QUESTIONS_IN_QUIZ) {
+            randomPosition = rng.nextInt(size);
+            randomSuperhero = mFilteredSuperheroesList.get(randomPosition);
+
+            if (!mQuizSuperheroesList.contains(randomSuperhero))
+                mQuizSuperheroesList.add(randomSuperhero);
+        }
+        loadNextImage();
     }
 
     /**
@@ -116,7 +136,37 @@ public class QuizActivity extends AppCompatActivity {
      * answer.
      */
     public void loadNextImage() {
-        // TODO: loadNextImage() method
+        mCorrectSuperhero = mQuizSuperheroesList.remove(0);
+        mAnswerTextView.setText("");
+
+        // update question number
+        int questionNumber = QUESTIONS_IN_QUIZ - mQuizSuperheroesList.size();
+        mQuestionNumberTextView.setText(getString(R.string.question, questionNumber, QUESTIONS_IN_QUIZ));
+
+        // get image
+        AssetManager am = getAssets();
+        try {
+            InputStream stream = am.open(mCorrectSuperhero.getFileName());
+            Drawable image = Drawable.createFromStream(stream, mCorrectSuperhero.getName());
+            mSuperheroImageView.setImageDrawable(image);
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Error loading image: " + mCorrectSuperhero.getFileName());
+        }
+
+        // shuffle order of all the superheroes
+        do {
+            Collections.shuffle(mFilteredSuperheroesList);
+        }while (mAllSuperheroesList.subList(0, mButtons.length).contains(mCorrectSuperhero));
+
+        // enable all 4 buttons, set to superhero names
+        for (int i = 0; i < mButtons.length; ++i) {
+            mButtons[i].setEnabled(true);
+            mButtons[i].setText(mFilteredSuperheroesList.get(i).getName());
+        }
+
+        // randomly replace one of the buttons with correct answer
+        mButtons[rng.nextInt(mButtons.length)].setText(mCorrectSuperhero.getName());
     }
 
     /**

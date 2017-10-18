@@ -2,13 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
+        android:defaultValue="@string/guess_superhero"
         android:entries="@array/modes_list"
         android:entryValues="@array/modes_list"
         android:key="modes"
-        android:title="@string/quiz_modes"
-        android:summary="@string/quiz_modes_description"
         android:persistent="true"
-        android:defaultValue="Superhero Name"
+        android:summary="@string/quiz_modes_description"
+        android:title="@string/quiz_modes"
         />
 
 </PreferenceScreen>
