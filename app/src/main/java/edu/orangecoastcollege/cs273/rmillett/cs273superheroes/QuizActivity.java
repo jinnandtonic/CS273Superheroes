@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -92,7 +93,7 @@ public class QuizActivity extends AppCompatActivity {
         // Set mQuestionNumberTextView's text
         mQuestionNumberTextView.setText(getString(R.string.question, 1, QUESTIONS_IN_QUIZ));
 
-        // TODO: Load all superheroes from the JSON file using JSONLoader
+        // Load all superheroes from the JSON file using JSONLoader
         try {
             mAllSuperheroesList = JSONLoader.loadJSONFromAsset(this);
         }
@@ -216,6 +217,7 @@ public class QuizActivity extends AppCompatActivity {
                     updateMode();
                     resetQuiz();
             }
+            Toast.makeText(QuizActivity.this, R.string.restarting_quiz, Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -224,5 +226,6 @@ public class QuizActivity extends AppCompatActivity {
      */
     public void updateMode() {
         // TODO: updateMode() method
+        mFilteredSuperheroesList = new ArrayList<>(mAllSuperheroesList);
     }
 }
