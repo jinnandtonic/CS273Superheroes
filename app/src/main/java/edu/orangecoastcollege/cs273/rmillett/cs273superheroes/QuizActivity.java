@@ -39,7 +39,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private List<Superhero> mAllSuperheroesList;
     private List<Superhero> mQuizSuperheroesList;
-    // TODO: change this to a list of Strings
+    // TODO: look into fixing this
     private List<String> mQuizTypeList;
 
     private Superhero mCorrectSuperhero;
@@ -105,9 +105,31 @@ public class QuizActivity extends AppCompatActivity {
 
         // get preferences
         mQuizType = mPreferences.getString(QUIZ_TYPE, "Superhero Name");
+        updateQuizType();
 
         // Reset quiz
         resetQuiz();
+    }
+
+    private void updateQuizType() {
+        // set correct answer and populate lists based on preferences
+        mQuizTypeList  = new ArrayList<>();
+
+        if (mQuizType.equals(R.string.guess_superhero)) {
+            mCorrectAnswer = mCorrectSuperhero.getName();
+            for (Superhero s : mQuizSuperheroesList)
+                mQuizTypeList.add(s.getName());
+        }
+        else if (mQuizType.equals(R.string.guess_super_power)) {
+            mCorrectAnswer = mCorrectSuperhero.getSuperpower();
+            for (Superhero s : mQuizSuperheroesList)
+                mQuizTypeList.add(s.getSuperpower());
+        }
+        else if (mQuizType.equals(R.string.guess_one_thing)) {
+            mCorrectAnswer = mCorrectSuperhero.getOneThing();
+            for (Superhero s : mQuizSuperheroesList)
+                mQuizTypeList.add(s.getOneThing());
+        }
     }
 
     /**
@@ -155,23 +177,6 @@ public class QuizActivity extends AppCompatActivity {
         }
         catch (IOException e) {
             Log.e(TAG, "Error loading image: " + mCorrectSuperhero.getFileName());
-        }
-
-        // set correct answer and populate lists based on preferences
-        if (mQuizType.equals(R.string.guess_superhero)) {
-            mCorrectAnswer = mCorrectSuperhero.getName();
-            for (Superhero s : mQuizSuperheroesList)
-                mQuizTypeList.add(s.getName());
-        }
-        else if (mQuizType.equals(R.string.guess_super_power)) {
-            mCorrectAnswer = mCorrectSuperhero.getSuperpower();
-            for (Superhero s : mQuizSuperheroesList)
-                mQuizTypeList.add(s.getSuperpower());
-        }
-        else if (mQuizType.equals(R.string.guess_one_thing)) {
-            mCorrectAnswer = mCorrectSuperhero.getOneThing();
-            for (Superhero s : mQuizSuperheroesList)
-                mQuizTypeList.add(s.getOneThing());
         }
 
         // shuffle order of all the superheroes
