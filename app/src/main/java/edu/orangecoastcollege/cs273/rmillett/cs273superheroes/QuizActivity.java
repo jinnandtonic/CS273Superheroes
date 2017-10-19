@@ -39,9 +39,11 @@ public class QuizActivity extends AppCompatActivity {
 
     private List<Superhero> mAllSuperheroesList;
     private List<Superhero> mQuizSuperheroesList;
-    private List<Superhero> mFilteredSuperheroesList;
+    // TODO: change this to a list of Strings
+    private List<String> mQuizTypeList;
 
     private Superhero mCorrectSuperhero;
+    private String mCorrectAnswer;
 
     private int mTotalGuesses;
     private int mCorrectGuesses;
@@ -54,9 +56,9 @@ public class QuizActivity extends AppCompatActivity {
     private ImageView mSuperheroImageView;
     private TextView mAnswerTextView;
 
-    private String mMode;
+    private String mQuizType;
 
-    public static final String MODES = "modes";
+    public static final String QUIZ_TYPE = "quizTypes";
 
     /**
      * Creates an instance of <code>QuizActivity</code> in the view
@@ -66,10 +68,6 @@ public class QuizActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
-
-        // Register the OnSharedPreferencesChangeListener
-        SharedPreferences mPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
-        mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
 
         mQuizSuperheroesList = new ArrayList<>(QUESTIONS_IN_QUIZ);
         rng = new SecureRandom();
@@ -101,8 +99,12 @@ public class QuizActivity extends AppCompatActivity {
             Log.e(TAG, "Error loading JSON file", e);
         }
 
-        mMode = mPreferences.getString(MODES, "Superhero Name");
-        updateMode();
+        // Register the OnSharedPreferencesChangeListener
+        SharedPreferences mPreferences = android.preference.PreferenceManager.getDefaultSharedPreferences(this);
+        mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
+
+        // get preferences
+        mQuizType = mPreferences.getString(QUIZ_TYPE, "Superhero Name");
 
         // Reset quiz
         resetQuiz();
@@ -117,13 +119,13 @@ public class QuizActivity extends AppCompatActivity {
         mTotalGuesses = 0;
         mQuizSuperheroesList.clear();
 
-        // randomly add superheroes from filtered list into quiz list
-        int size = mFilteredSuperheroesList.size();
+        // randomly add superheroes from all list into quiz list
+        int size = mAllSuperheroesList.size();
         int randomPosition;
         Superhero randomSuperhero;
         while (mQuizSuperheroesList.size() < QUESTIONS_IN_QUIZ) {
             randomPosition = rng.nextInt(size);
-            randomSuperhero = mFilteredSuperheroesList.get(randomPosition);
+            randomSuperhero = mAllSuperheroesList.get(randomPosition);
 
             if (!mQuizSuperheroesList.contains(randomSuperhero))
                 mQuizSuperheroesList.add(randomSuperhero);
@@ -144,7 +146,7 @@ public class QuizActivity extends AppCompatActivity {
         int questionNumber = QUESTIONS_IN_QUIZ - mQuizSuperheroesList.size();
         mQuestionNumberTextView.setText(getString(R.string.question, questionNumber, QUESTIONS_IN_QUIZ));
 
-        // get image
+        // display correct image
         AssetManager am = getAssets();
         try {
             InputStream stream = am.open(mCorrectSuperhero.getFileName());
@@ -155,15 +157,32 @@ public class QuizActivity extends AppCompatActivity {
             Log.e(TAG, "Error loading image: " + mCorrectSuperhero.getFileName());
         }
 
+        // set correct answer and populate lists based on preferences
+        if (mQuizType.equals(R.string.guess_superhero)) {
+            mCorrectAnswer = mCorrectSuperhero.getName();
+            for (Superhero s : mQuizSuperheroesList)
+                mQuizTypeList.add(s.getName());
+        }
+        else if (mQuizType.equals(R.string.guess_super_power)) {
+            mCorrectAnswer = mCorrectSuperhero.getSuperpower();
+            for (Superhero s : mQuizSuperheroesList)
+                mQuizTypeList.add(s.getSuperpower());
+        }
+        else if (mQuizType.equals(R.string.guess_one_thing)) {
+            mCorrectAnswer = mCorrectSuperhero.getOneThing();
+            for (Superhero s : mQuizSuperheroesList)
+                mQuizTypeList.add(s.getOneThing());
+        }
+
         // shuffle order of all the superheroes
         do {
-            Collections.shuffle(mFilteredSuperheroesList);
-        }while (mAllSuperheroesList.subList(0, mButtons.length).contains(mCorrectSuperhero));
+            Collections.shuffle(mQuizTypeList);
+        }while (mQuizTypeList.subList(0, mButtons.length).contains(mCorrectAnswer));
 
         // enable all 4 buttons, set to superhero names
         for (int i = 0; i < mButtons.length; ++i) {
             mButtons[i].setEnabled(true);
-            mButtons[i].setText(mFilteredSuperheroesList.get(i).getName());
+            mButtons[i].setText(mQuizTypeList.get(i));
         }
 
         // randomly replace one of the buttons with correct answer
@@ -181,6 +200,15 @@ public class QuizActivity extends AppCompatActivity {
     public void makeGuess(View view) {
         // TODO: makeGuess() method
     }
+
+    private SharedPreferences.OnSharedPreferenceChangeListener mPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            mQuizType = sharedPreferences.getString(QUIZ_TYPE, "Superhero Name");
+            resetQuiz();
+            Toast.makeText(QuizActivity.this, R.string.restarting_quiz, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     /**
      * Override onCreateOptionsMenu to inflate the settings menu within QuizActivity
@@ -206,26 +234,5 @@ public class QuizActivity extends AppCompatActivity {
         startActivity(settingsIntent);
 
         return super.onOptionsItemSelected(item);
-    }
-
-    SharedPreferences.OnSharedPreferenceChangeListener mPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            switch (key) {
-                case MODES:
-                    mMode = sharedPreferences.getString(MODES, "Superhero Name");
-                    updateMode();
-                    resetQuiz();
-            }
-            Toast.makeText(QuizActivity.this, R.string.restarting_quiz, Toast.LENGTH_SHORT).show();
-        }
-    };
-
-    /**
-     * Updates the mode of gameplay selected by the user in the <code>SettingsActivity</code>.
-     */
-    public void updateMode() {
-        // TODO: updateMode() method
-        mFilteredSuperheroesList = new ArrayList<>(mAllSuperheroesList);
     }
 }
