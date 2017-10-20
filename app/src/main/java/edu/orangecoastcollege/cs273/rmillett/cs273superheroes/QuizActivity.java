@@ -1,10 +1,13 @@
 package edu.orangecoastcollege.cs273.rmillett.cs273superheroes;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,7 +42,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private List<Superhero> mAllSuperheroesList;
     private List<Superhero> mQuizSuperheroesList;
-    // TODO: look into fixing this
+
     private List<String> mQuizTypeList;
 
     private Superhero mCorrectSuperhero;
@@ -205,7 +208,47 @@ public class QuizActivity extends AppCompatActivity {
      * @param view
      */
     public void makeGuess(View view) {
-        // TODO: makeGuess() method
+        Button clickedButton = (Button) view;
+        String guess = clickedButton.getText().toString();
+
+        mTotalGuesses++;
+
+        if (guess.equals(mCorrectAnswer)) {
+            mCorrectGuesses++;
+            for (Button b : mButtons) b.setEnabled(false);
+            mAnswerTextView.setText(mCorrectAnswer);
+            mAnswerTextView.setTextColor(ContextCompat.getColor(this, R.color.correct_answer));
+
+            if (mCorrectGuesses < QUESTIONS_IN_QUIZ) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadNextImage();
+                    }
+                }, 2000);
+            }
+            else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.results, mTotalGuesses, 100.0 * mCorrectGuesses / mTotalGuesses));
+                builder.setPositiveButton(getString(R.string.restarting_quiz), new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        resetQuiz();
+                    }
+                });
+                builder.setCancelable(false);
+                builder.create();
+                builder.show();
+            }
+        }
+        else {
+            clickedButton.setEnabled(false);
+            mAnswerTextView.setText(getString(R.string.incorrect_answer));
+            mAnswerTextView.setTextColor(ContextCompat.getColor(this, R.color.incorrect_answer));
+        }
+
     }
 
     private SharedPreferences.OnSharedPreferenceChangeListener mPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
