@@ -2,10 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:defaultValue="@string/guess_superhero"
+        android:defaultValue="@string/pref_default"
         android:entries="@array/modes_list"
         android:entryValues="@array/modes_list"
-        android:key="modes"
+        android:key="@string/pref_key"
         android:persistent="true"
         android:summary="@string/quiz_modes_description"
         android:title="@string/quiz_modes"

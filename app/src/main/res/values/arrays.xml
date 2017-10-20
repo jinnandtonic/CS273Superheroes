@@ -2,9 +2,9 @@
 <resources>
 
    <string-array name="modes_list">
-      <item>Superhero Name</item>
-      <item>Superpower</item>
-      <item>One Thing</item>
+      <item>@string/guess_superhero</item>
+      <item>@string/guess_super_power</item>
+      <item>@string/guess_one_thing</item>
    </string-array>
 
 </resources>

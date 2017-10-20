@@ -104,8 +104,8 @@ public class QuizActivity extends AppCompatActivity {
         mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
 
         // get preferences
-        mQuizType = mPreferences.getString(QUIZ_TYPE, "Superhero Name");
-        updateQuizType();
+        mQuizType = mPreferences.getString(QUIZ_TYPE, getString(R.string.pref_default));
+        //updateQuizType();
 
         // Reset quiz
         resetQuiz();
@@ -115,17 +115,17 @@ public class QuizActivity extends AppCompatActivity {
         // set correct answer and populate lists based on preferences
         mQuizTypeList  = new ArrayList<>();
 
-        if (mQuizType.equals(R.string.guess_superhero)) {
+        if (mQuizType.equals(getString(R.string.guess_superhero))) {
             mCorrectAnswer = mCorrectSuperhero.getName();
             for (Superhero s : mQuizSuperheroesList)
                 mQuizTypeList.add(s.getName());
         }
-        else if (mQuizType.equals(R.string.guess_super_power)) {
+        else if (mQuizType.equals(getString(R.string.guess_super_power))) {
             mCorrectAnswer = mCorrectSuperhero.getSuperpower();
             for (Superhero s : mQuizSuperheroesList)
                 mQuizTypeList.add(s.getSuperpower());
         }
-        else if (mQuizType.equals(R.string.guess_one_thing)) {
+        else if (mQuizType.equals(getString(R.string.guess_one_thing))) {
             mCorrectAnswer = mCorrectSuperhero.getOneThing();
             for (Superhero s : mQuizSuperheroesList)
                 mQuizTypeList.add(s.getOneThing());
@@ -179,6 +179,8 @@ public class QuizActivity extends AppCompatActivity {
             Log.e(TAG, "Error loading image: " + mCorrectSuperhero.getFileName());
         }
 
+        updateQuizType();
+
         // shuffle order of all the superheroes
         do {
             Collections.shuffle(mQuizTypeList);
@@ -209,8 +211,9 @@ public class QuizActivity extends AppCompatActivity {
     private SharedPreferences.OnSharedPreferenceChangeListener mPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            mQuizType = sharedPreferences.getString(QUIZ_TYPE, "Superhero Name");
+            mQuizType = sharedPreferences.getString(getString(R.string.pref_key), getString(R.string.pref_default));
             resetQuiz();
+
             Toast.makeText(QuizActivity.this, R.string.restarting_quiz, Toast.LENGTH_SHORT).show();
         }
     };
