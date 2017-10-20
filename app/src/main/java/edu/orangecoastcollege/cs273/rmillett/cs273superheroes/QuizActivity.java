@@ -57,6 +57,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private TextView mQuestionNumberTextView;
     private ImageView mSuperheroImageView;
+    private TextView mQuestionTextView;
     private TextView mAnswerTextView;
 
     private String mQuizType;
@@ -79,6 +80,7 @@ public class QuizActivity extends AppCompatActivity {
         // Connect GUI
         mQuestionNumberTextView = (TextView) findViewById(R.id.questionNumberTextView);
         mSuperheroImageView = (ImageView) findViewById(R.id.superHeroImageView);
+        mQuestionTextView = (TextView) findViewById(R.id.questionTextView);
         mAnswerTextView = (TextView) findViewById(R.id.answerTextView);
 
         // Add buttons to mButtons array
@@ -107,7 +109,7 @@ public class QuizActivity extends AppCompatActivity {
         mPreferences.registerOnSharedPreferenceChangeListener(mPreferenceChangeListener);
 
         // get preferences
-        mQuizType = mPreferences.getString(QUIZ_TYPE, getString(R.string.pref_default));
+        mQuizType = mPreferences.getString(getString(R.string.pref_key), getString(R.string.pref_default));
         //updateQuizType();
 
         // Reset quiz
@@ -133,6 +135,9 @@ public class QuizActivity extends AppCompatActivity {
             for (Superhero s : mQuizSuperheroesList)
                 mQuizTypeList.add(s.getOneThing());
         }
+
+        Log.e(TAG, "updateQuizType() --> " + "mQuizTypeList.size() = " + mQuizTypeList.size());
+        Log.e(TAG, "updateQuizType() --> " + "mQuizType = " + mQuizType);
     }
 
     /**
@@ -143,6 +148,8 @@ public class QuizActivity extends AppCompatActivity {
         mCorrectGuesses = 0;
         mTotalGuesses = 0;
         mQuizSuperheroesList.clear();
+
+        mQuestionTextView.setText(getString(R.string.question_type, mQuizType));
 
         // randomly add superheroes from all list into quiz list
         int size = mAllSuperheroesList.size();
@@ -155,6 +162,7 @@ public class QuizActivity extends AppCompatActivity {
             if (!mQuizSuperheroesList.contains(randomSuperhero))
                 mQuizSuperheroesList.add(randomSuperhero);
         }
+        Log.e(TAG, "resetQuiz() --> " + "mQuizSuperheroesList.size() = " + mQuizSuperheroesList.size());
         loadNextImage();
     }
 
@@ -187,6 +195,7 @@ public class QuizActivity extends AppCompatActivity {
         // shuffle order of all the superheroes
         do {
             Collections.shuffle(mQuizTypeList);
+            Log.e(TAG, "inside loadNextImage --> mQuizTypeList.size() = " + mQuizTypeList.size());
         }while (mQuizTypeList.subList(0, mButtons.length).contains(mCorrectAnswer));
 
         // enable all 4 buttons, set to superhero names
@@ -196,7 +205,7 @@ public class QuizActivity extends AppCompatActivity {
         }
 
         // randomly replace one of the buttons with correct answer
-        mButtons[rng.nextInt(mButtons.length)].setText(mCorrectSuperhero.getName());
+        mButtons[rng.nextInt(mButtons.length)].setText(mCorrectAnswer);
     }
 
     /**
@@ -255,6 +264,7 @@ public class QuizActivity extends AppCompatActivity {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             mQuizType = sharedPreferences.getString(getString(R.string.pref_key), getString(R.string.pref_default));
+            //updateQuizType();
             resetQuiz();
 
             Toast.makeText(QuizActivity.this, R.string.restarting_quiz, Toast.LENGTH_SHORT).show();

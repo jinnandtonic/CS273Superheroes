@@ -4,6 +4,7 @@
     <string name="pref_default">@string/guess_superhero</string>
     <string name="pref_key">pref_quiz_type</string>
     <string name="question">Question %1$d of %2$d</string>
+    <string name="question_type">Guess the %1$s</string>
     <string name="image_description">Image of the current superhero in the quiz</string>
     <string name="guess_superhero">Guess the Superhero</string>
     <string name="guess_super_power">Guess the Super Power</string>
