@@ -122,17 +122,17 @@ public class QuizActivity extends AppCompatActivity {
 
         if (mQuizType.equals(getString(R.string.guess_superhero))) {
             mCorrectAnswer = mCorrectSuperhero.getName();
-            for (Superhero s : mQuizSuperheroesList)
+            for (Superhero s : mAllSuperheroesList)
                 mQuizTypeList.add(s.getName());
         }
         else if (mQuizType.equals(getString(R.string.guess_super_power))) {
             mCorrectAnswer = mCorrectSuperhero.getSuperpower();
-            for (Superhero s : mQuizSuperheroesList)
+            for (Superhero s : mAllSuperheroesList)
                 mQuizTypeList.add(s.getSuperpower());
         }
         else if (mQuizType.equals(getString(R.string.guess_one_thing))) {
             mCorrectAnswer = mCorrectSuperhero.getOneThing();
-            for (Superhero s : mQuizSuperheroesList)
+            for (Superhero s : mAllSuperheroesList)
                 mQuizTypeList.add(s.getOneThing());
         }
 
